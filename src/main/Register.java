@@ -1,26 +1,25 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+
 package main;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.RoundRectangle2D;
-import java.util.HashMap;
 import javax.swing.*;
-import static main.Login.accounts;
-import static main.Login.proceedLogin;
 import static main.Main.frame;
 import static main.Accounts.addAccount;
+import java.util.Random;
 
-/**
- *
- * @author Pololoers
- */
 public class Register {
-    
+    public static int gene5num() {
+        Random random = new Random();
+        int chums;
+        do {
+            chums = random.nextInt(90000) + 10000;
+        } while (Accounts.userIdExists(chums));
+        return chums;
+    }
+
     public static void backToLogin(){
         frame.getContentPane().removeAll(); // Remove previous contents
         JPanel panel = Login.createLoginPanel(frame); // Create new panel
@@ -62,20 +61,45 @@ public class Register {
             insets = new Insets(5, 5, 5, 5);
         }};   
         
-        GridBagConstraints gbcRegisterTitle = new GridBagConstraints() {
+        GridBagConstraints gbct = new GridBagConstraints() {
         {
             gridwidth = GridBagConstraints.REMAINDER;
             fill = GridBagConstraints.HORIZONTAL;
-            insets = new Insets(0, 70, 10, 0); // Add space between title and other components
+            insets = new Insets(0, 52, 10, 0); // Add space between title and other components
             anchor = GridBagConstraints.CENTER; // Center horizontally
         }};
 
         // Login Name Label
-        JLabel nameLabel = new JLabel("Username:");
+        JLabel titleLabel = new JLabel("Register"){{
+            setFont(new Font("null", Font.PLAIN, 28));
+        }};        
+        panel.add(titleLabel, gbct);
+
+        // Login Name Label
+        JLabel nameLabel = new JLabel("Account ID:");
         panel.add(nameLabel, gbc);
         // Login Name TextField
-        JTextField nameField = new JTextField(20);
-        panel.add(nameField, gbc);
+        JTextField idField = new JTextField(5){{
+            setHorizontalAlignment(CENTER);
+            setFont(new Font("null", Font.BOLD, 20));
+            setBorder(BorderFactory.createEmptyBorder());
+            setOpaque(false);
+            setEditable(false);
+        }};
+        panel.add(idField, gbc);
+        JButton gen = new JButton("Generate ID"){{
+            setFocusable(false);
+            addActionListener(new ActionListener(){
+                @Override
+                public void actionPerformed(ActionEvent e){
+                    int num = gene5num();
+                    idField.setText(Integer.toString(num));
+                }
+            });
+        }};
+        panel.add(gen,gbc);
+        String aa = Integer.toString(gene5num());
+        idField.setText(aa);
         
         //  Name Label
         JLabel nameLabelname = new JLabel("Account Name:");
@@ -114,15 +138,10 @@ public class Register {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     // Check if the username is filled
-                    String username = nameField.getText().trim();
-                    if (username.isEmpty()) {
-                        JOptionPane.showMessageDialog(frame, "Please enter a username.");
-                        return;
-                    }
-
-                    // Check if the username is already taken
-                    if (accounts.containsKey(username)) {
-                        JOptionPane.showMessageDialog(frame, "Username already taken. Please choose another one.");
+                    String struserid = idField.getText().trim();
+                    int userid = Integer.parseInt(struserid);
+                    if (struserid.isEmpty()) {
+                        JOptionPane.showMessageDialog(frame, "Please generate an ID number.");
                         return;
                     }
 
@@ -152,18 +171,7 @@ public class Register {
                         JOptionPane.showMessageDialog(frame, "Initial deposit must be at least 500.00.");
                         return;
                     }
-
-                    // If all checks pass, proceed with registration
-                    // You can add the registration logic here
-                    // For demonstration, let's just print the registration details
-                    /*
-                    variables
-                    username
-                    name
-                    password
-                    depot
-                    */
-                    addAccount(username, name, password, depot);
+                    addAccount(userid, name, password, depot);
                     
                     // Optionally, show a message dialog indicating successful registration
                     JOptionPane.showMessageDialog(frame, "Registration successful.");
