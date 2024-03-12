@@ -270,6 +270,9 @@ currencyPanel.add(pesosign);
 String moneyString = String.format("%.2f", money);
         DecimalFormat formatter = new DecimalFormat("#,###.00");
         String formattedNumber = formatter.format(money);
+        if (formattedNumber.equals(".00")){
+            formattedNumber="0.00";
+        }
 JLabel amountLabel = new JLabel(formattedNumber); // Example amount, replace with actual value
 amountLabel.setFont(new Font("null", Font.BOLD, 28)); // Set font to match peso sign
 currencyPanel.add(amountLabel);
