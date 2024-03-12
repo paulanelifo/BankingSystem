@@ -6,27 +6,36 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.geom.RoundRectangle2D;
 import java.util.HashMap;
-import static main.Accounts.createAccountsHashMap;
 import static main.Main.frame;
-import static main.Register.createRegisterPanel;
-import static main.Main.GradientFrame;
+import static main.Dashboard.createDashboardPanel;
 
 public class Login {
-    public static HashMap<String, HashMap<String, Object>> accounts = createAccountsHashMap();
+    private static HashMap<Integer, HashMap<String, Object>> accounts = Main.accounts;
     
-    public static void proceedLogin(JFrame frame){
-        frame.dispose();
+    public static JFrame newFrame = new JFrame("Dashboard");
+    public static void proceedLogin(JFrame frame) {
+        frame.getContentPane().removeAll(); // Remove the previous contents
+        // Create a new frame with the dashboard panel
+        Main.GradientFrame(newFrame, new Color(218, 224, 255), new Color(90,133,255)); // Apply gradient
+        newFrame.setTitle("Banking System - Dashboard");
+        newFrame.add(createDashboardPanel(frame)); // Add the dashboard panel to the new frame
+        newFrame.setLocationRelativeTo(null); // Center the new frame
+        newFrame.setVisible(true); // Make the new frame visible
+        frame.dispose(); // Dispose the old frame
     }
     
     public static void proceedRegister(){
         frame.getContentPane().removeAll(); // Remove previous contents
         JPanel panel = Register.createRegisterPanel(frame); // Create new panel
+        frame.setTitle("Banking System - Register");
         frame.add(panel); // Add the new panel
         frame.setLocationRelativeTo(null); // Center the frame
         frame.setVisible(true); // Make the frame visible
     }
     
     public static JPanel createLoginPanel(JFrame frame) {
+        Main.currentid=0;
+
         JPanel panel = new JPanel(new GridBagLayout()) {
             {
                 setOpaque(false); // Make panel transparent
@@ -57,7 +66,7 @@ public class Login {
             insets = new Insets(5, 5, 5, 5);
         }};   
         
-        GridBagConstraints gbcLoginTitle = new GridBagConstraints() {
+        GridBagConstraints gbct = new GridBagConstraints() {
         {
             gridwidth = GridBagConstraints.REMAINDER;
             fill = GridBagConstraints.HORIZONTAL;
@@ -66,10 +75,19 @@ public class Login {
         }};
 
         // Login Name Label
-        JLabel nameLabel = new JLabel("Login Name:");
+        JLabel titleLabel = new JLabel("Login"){{
+            setFont(new Font("null", Font.PLAIN, 28));
+        }};        
+        panel.add(titleLabel, gbct);
+        
+        // Login Name Label
+        JLabel nameLabel = new JLabel("Account ID:");
         panel.add(nameLabel, gbc);
         // Login Name TextField
-        JTextField nameField = new JTextField(20);
+        JTextField nameField = new JTextField(5){{
+            setHorizontalAlignment(CENTER);            
+            setFont(new Font("null", Font.BOLD, 20));
+        }};
         panel.add(nameField, gbc);
 
         // Password Label
@@ -85,16 +103,18 @@ public class Login {
             addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    String username = nameField.getText();
+                    String struserid = nameField.getText();
+                    int userid = Integer.parseInt(struserid);
                     String password = passwordField.getText();
-                    if(accounts.containsKey(username)) {
-                        HashMap<String, Object> userData = accounts.get(username);
+                    if(accounts.containsKey(userid)) {
+                        HashMap<String, Object> userData = accounts.get(userid);
                         String storedPassword = (String) userData.get("password");
                         if(password.equals(storedPassword)) {
                             // Successful login
                             StringBuilder sb = new StringBuilder();
                             sb.append("Login successful");
                             JOptionPane.showMessageDialog(frame, sb);
+                            Main.currentid=userid;
                             proceedLogin(frame);
                         } else {
                             // Incorrect password
@@ -105,7 +125,7 @@ public class Login {
                     } else {
                         // Username not found
                         StringBuilder sb = new StringBuilder();
-                        sb.append("Username not found");
+                        sb.append("Account ID not found");
                         JOptionPane.showMessageDialog(frame, sb);
                         
                     }
